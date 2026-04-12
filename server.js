@@ -18,9 +18,14 @@ app.use(express.json());
 
 initDB();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+// Initialize OpenAI lazily so server doesn't crash if key is missing
+let openai;
+function getOpenAI() {
+    if (!openai) {
+        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    }
+    return openai;
+}
 
 // Emojis mapping
 const emojis = {
@@ -47,7 +52,7 @@ app.get('/api/orders', (req, res) => {
 // ------------------------------
 async function extractOrderDetails(text) {
     try {
-        const response = await openai.chat.completions.create({
+        const response = await getOpenAI().chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
                 {
@@ -123,7 +128,7 @@ app.post('/webhook', async (req, res) => {
             const audioPath = await downloadMedia(mediaUrl);
 
             console.log("Transcribing audio via Whisper...");
-            const transcriptRes = await openai.audio.transcriptions.create({
+            const transcriptRes = await getOpenAI().audio.transcriptions.create({
                 file: fs.createReadStream(audioPath),
                 model: "whisper-1",
             });
