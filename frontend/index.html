@@ -3,179 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Tiffin AI</title>
+    <title>Smart Tiffin AI | Chef Dashboard</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="app">
         
         <!-- Login View -->
-        <main id="login-view" class="view active">
+        <main id="login-view" class="view active animate-fade-in">
             <div class="login-container">
-                <div class="logo-box">
-                    <span class="material-symbols-outlined logo-icon">restaurant</span>
+                <div class="logo-section">
+                    <div class="logo-wrapper">
+                        <span class="material-symbols-outlined">restaurant</span>
+                    </div>
                     <h1>Smart Tiffin</h1>
-                    <p>Manage your home food business</p>
+                    <p>Professional Chef Dashboard</p>
                 </div>
                 <form id="login-form">
-                    <div class="input-group">
-                        <span class="material-symbols-outlined icon">mail</span>
-                        <input type="email" placeholder="Email address" required value="chef@home.com">
+                    <div class="login-form-group">
+                        <label>Chef Email</label>
+                        <div class="input-wrapper">
+                            <span class="material-symbols-outlined">mail</span>
+                            <input type="email" placeholder="chef@home.com" required value="chef@home.com">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="material-symbols-outlined icon">lock</span>
-                        <input type="password" placeholder="Password" required value="password123">
+                    <div class="login-form-group">
+                        <label>Access Key</label>
+                        <div class="input-wrapper">
+                            <span class="material-symbols-outlined">lock</span>
+                            <input type="password" placeholder="••••••••" required value="password123">
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-block">Enter Kitchen</button>
+                    <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem;" class="text-muted">
+                        Don't have an account? <span style="color: var(--zomato-red); font-weight: 700;">Sign up</span>
+                    </p>
                 </form>
             </div>
         </main>
 
         <!-- Dashboard View -->
-        <main id="dashboard-view" class="view">
-            <header class="app-header">
-                <div>
-                    <h2>Hello, Chef 👋</h2>
-                    <p class="subtitle">Here's your summary for today</p>
+        <main id="dashboard-view" class="view animate-slide-up">
+            <header class="main-header">
+                <div class="user-profile">
+                    <div class="avatar">M</div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; line-height: 1.2;">Hello, Manasa! 👋</h3>
+                        <p class="text-muted" style="font-size: 0.75rem;">Your kitchen is looking great today</p>
+                    </div>
                 </div>
-                <div class="profile-pic">
-                    <span class="material-symbols-outlined">person</span>
-                </div>
+                <button class="btn-icon" style="color: var(--grey-medium);">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
             </header>
 
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon-box yellow">
-                        <span class="material-symbols-outlined">shopping_bag</span>
-                    </div>
-                    <div class="stat-info">
-                        <h3>14</h3>
+            <div class="dashboard-content">
+                <div class="stat-grid">
+                    <div class="stat-tile red">
+                        <div class="icon-bg">
+                            <span class="material-symbols-outlined">shopping_bag</span>
+                        </div>
+                        <h4 id="stat-total">14</h4>
                         <p>Total Orders</p>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-box orange">
-                        <span class="material-symbols-outlined">today</span>
-                    </div>
-                    <div class="stat-info">
-                        <h3>0</h3>
+                    <div class="stat-tile orange">
+                        <div class="icon-bg">
+                            <span class="material-symbols-outlined">today</span>
+                        </div>
+                        <h4 id="stat-today">0</h4>
                         <p>Today's Orders</p>
+                    </div>
+                </div>
+
+                <div class="order-list-header">
+                    <h3>Recent Kitchen Orders</h3>
+                    <span class="text-muted" style="font-weight: 700; font-size: 0.75rem; color: var(--zomato-red);">VIEW ALL</span>
+                </div>
+
+                <div id="orders-list">
+                    <!-- Orders injected via JS -->
+                    <div style="text-align: center; padding: 3rem 0;" class="text-muted" id="loading-state">
+                        <span class="material-symbols-outlined spinning" style="font-size: 40px; margin-bottom: 1rem;">sync</span>
+                        <p>Loading your orders...</p>
                     </div>
                 </div>
             </div>
 
-            <section class="recent-orders">
-                <div class="section-header">
-                    <h3>Recent Orders</h3>
-                    <button class="btn btn-text">View All</button>
-                </div>
-                <div id="orders-list" class="orders-list">
-                    <!-- Orders will be injected here via JS -->
-                </div>
-            </section>
-
-            <!-- Bottom Navigation -->
-            <nav class="bottom-nav">
-                <a href="#" class="nav-item active" data-target="dashboard-view">
+            <!-- Bottom Nav -->
+            <nav class="nav-bar">
+                <a href="#" class="nav-link active" data-target="dashboard-view">
                     <span class="material-symbols-outlined">home</span>
                     <span>Home</span>
                 </a>
-                <a href="#" class="nav-item fab-space" data-target="add-order-view">
-                    <!-- Space for FAB -->
-                </a>
-                <a href="#" class="nav-item" onclick="logout()">
+                
+                <button class="center-fab-btn" data-target="add-order-view">
+                    <span class="material-symbols-outlined">add</span>
+                </button>
+
+                <a href="#" class="nav-link" onclick="logout()">
                     <span class="material-symbols-outlined">logout</span>
                     <span>Logout</span>
                 </a>
-                <!-- Floating Action Button -->
-                <button class="fab" data-target="add-order-view">
-                    <span class="material-symbols-outlined">add</span>
-                </button>
             </nav>
         </main>
 
         <!-- Add Order View -->
-        <main id="add-order-view" class="view">
-            <header class="app-header small-header">
-                <button class="btn btn-icon back-btn" data-target="dashboard-view">
-                    <span class="material-symbols-outlined">arrow_back</span>
+        <main id="add-order-view" class="view animate-slide-up">
+            <header class="view-header">
+                <button class="btn-icon back-btn" data-target="dashboard-view" style="width: 36px; height: 36px; box-shadow: none; background: #f0f0f0;">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back_ios</span>
                 </button>
-                <h2>New Order</h2>
-                <div class="spacer"></div>
+                <h3 style="font-size: 1.1rem;">Create New Kitchen Order</h3>
             </header>
 
-            <div class="add-order-content">
-                <!-- WhatsApp Simulation Box -->
-                <div class="ai-box-container wa-simulation">
-                    <div class="wa-header">
-                        <div class="wa-avatar">
-                            <span class="material-symbols-outlined">forum</span>
-                        </div>
-                        <div class="wa-header-info">
-                            <h3>WhatsApp Order Sync</h3>
-                            <p>Simulation active</p>
-                        </div>
-                        <span class="material-symbols-outlined sparkling">auto_awesome</span>
+            <div class="voice-sync-card">
+                <div class="whatsapp-header">
+                    <div class="wa-icon-box">
+                        <span class="material-symbols-outlined">forum</span>
                     </div>
-                    
-                    <div class="wa-chat-bg">
-                        <div class="wa-chat-content" id="wa-chat-content">
-                            <div class="wa-bubble system">
-                                Hi Chef! Paste a text message, use the mic, or upload a voice note (.mp3/.ogg) to generate an order automatically.
-                            </div>
-                        </div>
+                    <div>
+                        <h4 style="font-size: 0.9rem;">WhatsApp Order Sync</h4>
+                        <p style="font-size: 0.7rem; opacity: 0.8;">AI Powered Extraction</p>
                     </div>
+                    <span class="material-symbols-outlined" style="margin-left: auto; font-size: 18px; color: #FFF;">auto_awesome</span>
+                </div>
 
-                    <div class="wa-input-area">
-                        <div class="wa-input-actions">
-                            <label for="wa-audio-upload" class="btn-icon" title="Upload Voice Note">
-                                <span class="material-symbols-outlined">attach_file_add</span>
-                            </label>
-                            <input type="file" id="wa-audio-upload" accept="audio/*" style="display: none;">
-                        </div>
-                        <textarea id="ai-input" rows="1" placeholder='Type or paste message...'></textarea>
-                        <button type="button" id="mic-btn" class="btn-icon btn-mic-small" title="Hold to Speak">
-                            <span class="material-symbols-outlined">mic</span>
-                        </button>
-                        <button id="ai-parse-btn" class="wa-send-btn">
-                            <span class="material-symbols-outlined">send</span>
-                        </button>
+                <div class="wa-chat-window" id="wa-chat-content">
+                    <div class="msg-bubble sys">
+                        Paste a WhatsApp message or speak to capture order details automatically! 🍳
                     </div>
                 </div>
 
-                <div class="divider">
-                    <span>OR ENTER MANUALLY</span>
+                <div class="wa-input-row">
+                    <div style="display: flex; gap: 4px;">
+                        <input type="file" id="wa-audio-upload" accept="audio/*" style="display: none;">
+                        <label for="wa-audio-upload" class="wa-action-btn">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">attach_file</span>
+                        </label>
+                        <button id="mic-btn" class="wa-action-btn">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">mic</span>
+                        </button>
+                    </div>
+                    <textarea id="ai-input" class="wa-text-area" placeholder="Type message..."></textarea>
+                    <button id="ai-parse-btn" class="wa-action-btn wa-send">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">send</span>
+                    </button>
                 </div>
+            </div>
 
-                <!-- Manual Form -->
+            <div class="manual-form-section">
+                <h4 class="form-title">Manual Order Entry</h4>
                 <form id="add-order-form">
                     <div class="form-group">
-                        <label>Item Name</label>
-                        <input type="text" id="order-item" placeholder="e.g. Chicken Biryani" required>
+                        <label>Dish Name</label>
+                        <input type="text" id="order-item" placeholder="e.g. Garlic Naan & Dal Makhani" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <label>Quantity</label>
-                            <input type="number" id="order-qty" min="1" value="1" required>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Portions</label>
+                            <input type="number" id="order-qty" value="1" min="1" required>
                         </div>
-                        <div class="form-group half">
-                            <label>Price (₹)</label>
-                            <input type="number" id="order-price" min="0" step="0.01" placeholder="0.00" required>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="order-price" placeholder="0.00" step="0.01" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Delivery Time</label>
-                        <input type="text" id="order-time" placeholder="e.g. Tomorrow 1 PM" required>
+                        <label>Delivery Schedule</label>
+                        <input type="text" id="order-time" placeholder="e.g. Today, 8:30 PM" required>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary btn-block btn-large mt-4">
-                        Add Order
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top: 2rem; border-radius: 18px; padding: 1.1rem;">
+                        Confirm Kitchen Order
                     </button>
                 </form>
             </div>
@@ -183,8 +187,8 @@
 
     </div>
     
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Action successful</div>
+    <!-- Professional Toast Notif -->
+    <div id="toast" class="toast-notif">Order synced successfully ✨</div>
 
     <script src="app.js"></script>
 </body>

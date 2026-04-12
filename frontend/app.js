@@ -4,10 +4,7 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
     : ''; // On Render, API calls are on the same domain
 
 // --- Order Data state ---
-let orders = [
-    { id: 1, item: "Paneer Butter Masala", qty: 2, price: 250.00, time: "Today 7 PM", status: "pending", emoji: "🥘" },
-    { id: 2, item: "Chicken Biryani", qty: 3, price: 350.00, time: "Today 8 PM", status: "preparing", emoji: "🍲" }
-];
+let orders = [];
 
 // Fetch orders from backend server
 async function fetchOrders() {
@@ -15,9 +12,18 @@ async function fetchOrders() {
         const response = await fetch(`${API_BASE}/api/orders`);
         if (response.ok) {
             orders = await response.json();
+            // Hide loading state if it exists
+            const loadingState = document.getElementById('loading-state');
+            if (loadingState) loadingState.style.display = 'none';
         }
     } catch (err) {
-        console.log("Backend offline. Using local layout mode.");
+        console.log("Backend offline. Using demo data.");
+        if (orders.length === 0) {
+            orders = [
+                { id: 1, item: "Paneer Butter Masala", qty: 2, price: 250.00, time: "Today 7 PM", status: "pending", emoji: "🥘" },
+                { id: 2, item: "Chicken Biryani", qty: 3, price: 350.00, time: "Today 8 PM", status: "preparing", emoji: "🍲" }
+            ];
+        }
     }
     renderOrders();
     updateStats();
@@ -25,20 +31,10 @@ async function fetchOrders() {
 
 // Poll backend every 5 seconds for new WhatsApp orders
 setInterval(() => {
-    if (document.getElementById('dashboard-view').classList.contains('active')) {
+    if (document.activeView === 'dashboard-view') {
         fetchOrders();
     }
 }, 5000);
-
-// Emojis mapping for fun UI
-const emojis = {
-    'biryani': '🍲',
-    'paneer': '🥘',
-    'roti': '🫓',
-    'paratha': '🥞',
-    'chicken': '🍗',
-    'default': '🍱'
-};
 
 // --- DOM Elements ---
 const views = document.querySelectorAll('.view');
@@ -46,7 +42,7 @@ const navItems = document.querySelectorAll('[data-target]');
 const loginForm = document.getElementById('login-form');
 const addOrderForm = document.getElementById('add-order-form');
 const ordersList = document.getElementById('orders-list');
-const toast = document.getElementById('toast');
+const toastEl = document.getElementById('toast');
 
 const aiInput = document.getElementById('ai-input');
 const aiParseBtn = document.getElementById('ai-parse-btn');
@@ -55,20 +51,26 @@ const waAudioUpload = document.getElementById('wa-audio-upload');
 const waChatContent = document.getElementById('wa-chat-content');
 
 // --- Navigation Logic ---
+document.activeView = 'login-view';
+
 function switchView(targetId) {
     views.forEach(view => {
         view.classList.remove('active');
     });
-    document.getElementById(targetId).classList.add('active');
-    window.scrollTo(0, 0);
+    
+    const targetView = document.getElementById(targetId);
+    if (targetView) {
+        targetView.classList.add('active');
+        document.activeView = targetId;
+        window.scrollTo(0, 0);
+    }
 
-    navItems.forEach(item => {
-        if(item.classList.contains('nav-item') && !item.classList.contains('fab-space')) {
-            if(item.getAttribute('data-target') === targetId) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-            }
+    // Update nav links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.getAttribute('data-target') === targetId) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
         }
     });
 
@@ -81,26 +83,42 @@ function switchView(targetId) {
 navItems.forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
-        const target = item.getAttribute('data-target');
-        switchView(target);
+        const target = item.getAttribute('data-target') || item.parentElement.getAttribute('data-target');
+        if (target) switchView(target);
+    });
+});
+
+// Extra: center FAB binding
+document.querySelector('.center-fab-btn').addEventListener('click', () => {
+    switchView('add-order-view');
+});
+
+// Back buttons
+document.querySelectorAll('.back-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        switchView('dashboard-view');
     });
 });
 
 // --- Authentication ---
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    showToast("Login successful! Welcome Chef.");
+    showToast("Kitchen Accessed! Welcome Chef. ✨");
     setTimeout(() => {
         switchView('dashboard-view');
-    }, 500);
+    }, 600);
 });
 
 function logout() {
     switchView('login-view');
-    showToast("Logged out successfully.");
+    showToast("Kitchen Closed. See you soon!");
 }
 
 // --- Dashboard Logic ---
+const emojis = {
+    'biryani': '🍲', 'paneer': '🥘', 'roti': '🫓', 'paratha': '🥞', 'chicken': '🍗', 'dal': '🥣', 'default': '🍱'
+};
+
 function getEmoji(itemName) {
     const lowerName = itemName.toLowerCase();
     for (const key in emojis) {
@@ -110,24 +128,40 @@ function getEmoji(itemName) {
 }
 
 function renderOrders() {
+    if (!ordersList) return;
     ordersList.innerHTML = '';
+    
+    if (orders.length === 0) {
+        ordersList.innerHTML = `
+            <div style="text-align: center; padding: 3rem 0; opacity: 0.5;">
+                <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 1rem;">restaurant_menu</span>
+                <p>No orders yet. They'll show up here!</p>
+            </div>
+        `;
+        return;
+    }
+
     orders.forEach(order => {
-        let statusClass = "status-" + order.status.toLowerCase();
-        let statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+        const emoji = order.emoji || getEmoji(order.item);
+        const statusClass = order.status.toLowerCase();
+        const statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
         
         const orderHtml = `
-            <div class="order-card">
-                <div class="order-emoji">${order.emoji || getEmoji(order.item)}</div>
-                <div class="order-details">
-                    <div class="order-title-row">
-                        <h4>${order.qty}x ${order.item}</h4>
-                        <span class="status-badge ${statusClass}">${statusText}</span>
+            <div class="order-item-card animate-fade-in">
+                <div class="order-image-box">${emoji}</div>
+                <div class="order-info">
+                    <div class="order-header-row">
+                        <h4 class="order-name">${order.qty}x ${order.item}</h4>
+                        <span class="status-tag ${statusClass}">${statusText}</span>
                     </div>
-                    <div class="order-meta">
-                        ⏰ ${order.time}
+                    <div class="order-meta-info">
+                        <div class="meta-item">
+                            <span class="material-symbols-outlined">schedule</span>
+                            ${order.time}
+                        </div>
                     </div>
+                    <div class="order-price-val">₹${parseFloat(order.price).toFixed(2)}</div>
                 </div>
-                <div class="order-price">₹${order.price.toFixed(2)}</div>
             </div>
         `;
         ordersList.insertAdjacentHTML('beforeend', orderHtml);
@@ -135,22 +169,23 @@ function renderOrders() {
 }
 
 function updateStats() {
-    const totalOrdersCount = orders.length;
-    const todayOrdersCount = orders.filter(o => o.time.toLowerCase().includes('today')).length;
+    const totalEl = document.getElementById('stat-total');
+    const todayEl = document.getElementById('stat-today');
     
-    const statCards = document.querySelectorAll('.stat-info h3');
-    if(statCards.length >= 2) {
-        statCards[0].innerText = totalOrdersCount;
-        statCards[1].innerText = todayOrdersCount;
+    if (totalEl) totalEl.innerText = orders.length;
+    if (todayEl) {
+        const todayCount = orders.filter(o => o.time.toLowerCase().includes('today')).length;
+        todayEl.innerText = todayCount;
     }
 }
 
 // --- UI Helpers ---
 function showToast(msg) {
-    toast.innerText = msg;
-    toast.classList.add('show');
+    if (!toastEl) return;
+    toastEl.innerText = msg;
+    toastEl.classList.add('active');
     setTimeout(() => {
-        toast.classList.remove('show');
+        toastEl.classList.remove('active');
     }, 3000);
 }
 
@@ -163,6 +198,11 @@ addOrderForm.addEventListener('submit', async (e) => {
     const time = document.getElementById('order-time').value;
     const emoji = getEmoji(item);
 
+    const submitBtn = addOrderForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+    submitBtn.innerText = "Confirming...";
+    submitBtn.disabled = true;
+
     try {
         const response = await fetch(`${API_BASE}/api/orders`, {
             method: 'POST',
@@ -173,17 +213,19 @@ addOrderForm.addEventListener('submit', async (e) => {
         if (response.ok) {
             const newOrder = await response.json();
             orders.unshift(newOrder);
+            showToast("Order Confirmed! 🥂");
         } else {
-            // Fallback: add locally if server unreachable
-            orders.unshift({ id: Date.now(), item, qty, price, time, emoji, status: 'pending' });
+            throw new Error("Server error");
         }
     } catch (err) {
-        // Offline fallback
+        // Fallback for demo
         orders.unshift({ id: Date.now(), item, qty, price, time, emoji, status: 'pending' });
+        showToast("Order saved locally! ✨");
     }
 
+    submitBtn.innerText = originalText;
+    submitBtn.disabled = false;
     addOrderForm.reset();
-    showToast("Order added successfully!");
     switchView('dashboard-view');
 });
 
@@ -191,7 +233,7 @@ addOrderForm.addEventListener('submit', async (e) => {
 function addBubble(text, type) {
     if (!waChatContent) return;
     const bubble = document.createElement('div');
-    bubble.className = `wa-bubble ${type}`;
+    bubble.className = `msg-bubble ${type === 'user' ? 'usr' : 'sys'}`;
     bubble.innerText = text;
     waChatContent.appendChild(bubble);
     waChatContent.scrollTop = waChatContent.scrollHeight;
@@ -201,11 +243,11 @@ if (waAudioUpload) {
     waAudioUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            addBubble(`🎤 Voice note uploaded: ${file.name}`, 'user');
-            addBubble("Listening and processing audio...", 'system');
+            addBubble(`🎤 Voice note: ${file.name}`, 'user');
+            addBubble("Decoding audio via Whisper AI...", 'system');
             
             setTimeout(() => {
-                aiInput.value = "2 chicken curry tomorrow 8 PM";
+                aiInput.value = "2 paneer butter masala tonight 9 PM";
                 aiParseBtn.click();
             }, 1500);
             
@@ -214,112 +256,74 @@ if (waAudioUpload) {
     });
 }
 
-// --- AI Mock Parser Logic ---
+// AI Parse Logic
 aiParseBtn.addEventListener('click', () => {
-    const text = aiInput.value.toLowerCase().trim();
-    if (!text) {
-        showToast("Please type something first!");
-        return;
-    }
+    const text = aiInput.value.trim();
+    if (!text) return;
 
     addBubble(text, 'user');
-    
-    aiParseBtn.innerHTML = '<span class="material-symbols-outlined spinning" style="animation: spin 1s linear infinite;">sync</span>';
+    aiParseBtn.innerHTML = '<span class="material-symbols-outlined spinning">sync</span>';
     aiParseBtn.disabled = true;
-    addBubble("Extracting details...", 'system');
+    
+    addBubble("Extracting order details...", 'system');
 
     setTimeout(() => {
+        // Simple regex fallback for the simulation
         const qtyMatch = text.match(/\d+/);
         let qty = qtyMatch ? parseInt(qtyMatch[0]) : 1;
-
-        let time = "Today 8 PM";
-        const timeRegex = /(tomorrow|tonight|today|[\d]+ (am|pm))/g;
-        const timeMatches = text.match(timeRegex);
-        if (timeMatches) {
-            let timeParts = [...new Set(timeMatches)].join(" ");
-            time = timeParts.replace(/\b\w/g, l => l.toUpperCase());
-        }
-
-        let itemStr = text
+        let itemStr = text.toLowerCase()
             .replace(/\b\d+\b/g, '')
-            .replace(/(tomorrow|tonight|today|am|pm|pm|for|i|need|want|please|order)/g, '')
-            .replace(/\s{2,}/g, ' ')
+            .replace(/(tonight|today|tomorrow|at|pm|am|order|prepare|for|and)/g, '')
+            .replace(/\s+/g, ' ')
             .trim();
         
-        if (itemStr) {
-            itemStr = itemStr.charAt(0).toUpperCase() + itemStr.slice(1);
-        } else {
-            itemStr = "Unknown Item";
-        }
+        itemStr = itemStr.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-        let price = 100.00;
-        if(itemStr.toLowerCase().includes('biryani')) price = 350.00;
-        if(itemStr.toLowerCase().includes('chicken')) price = 250.00;
-
-        document.getElementById('order-item').value = itemStr;
+        document.getElementById('order-item').value = itemStr || "Special Dish";
         document.getElementById('order-qty').value = qty;
-        document.getElementById('order-price').value = price.toFixed(2);
+        document.getElementById('order-price').value = (qty * 150).toFixed(2);
+        
+        let time = "Tonight 8 PM";
+        if (text.toLowerCase().includes('tomorrow')) time = "Tomorrow 1 PM";
         document.getElementById('order-time').value = time;
 
         aiInput.value = '';
-        showToast("✨ Details extracted from text!");
-        addBubble("Done! I've populated the form below.", 'system');
+        showToast("AI extraction complete! ✨");
+        addBubble("Details populated below. Ready to confirm?", 'system');
         
         aiParseBtn.innerHTML = '<span class="material-symbols-outlined">send</span>';
         aiParseBtn.disabled = false;
-
-        addOrderForm.style.transform = 'scale(1.02)';
-        addOrderForm.style.transition = 'transform 0.3s ease';
-        setTimeout(() => addOrderForm.style.transform = 'scale(1)', 300);
-
-    }, 800);
+    }, 1200);
 });
 
-// Inline animation for spinner
-const style = document.createElement('style');
-style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
-document.head.appendChild(style);
-
-// --- Speech Recognition Logic ---
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
+// Mic binding
+if (micBtn) {
     micBtn.addEventListener('click', () => {
-        micBtn.classList.add('listening');
-        aiInput.placeholder = "Listening...";
-        recognition.start();
-    });
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        aiInput.value = transcript;
-        showToast("Voice captured! Parsing...");
-        setTimeout(() => {
-            aiParseBtn.click();
-        }, 400);
-    };
-
-    recognition.onspeechend = () => {
-        recognition.stop();
-    };
-
-    recognition.onend = () => {
-        micBtn.classList.remove('listening');
-        aiInput.placeholder = 'e.g. "2 biryani tomorrow 1 PM"';
-    };
-
-    recognition.onerror = (event) => {
-        micBtn.classList.remove('listening');
-        aiInput.placeholder = 'e.g. "2 biryani tomorrow 1 PM"';
-        showToast("Microphone error or not allowed. Please check permissions.");
-    };
-} else {
-    micBtn.addEventListener('click', () => {
-        showToast("Voice recognition not supported in this browser.");
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-IN';
+            micBtn.classList.add('listening');
+            aiInput.placeholder = "Listening to your voice...";
+            
+            recognition.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                aiInput.value = text;
+                showToast("Voice captured! 🎙️");
+                setTimeout(() => aiParseBtn.click(), 500);
+            };
+            
+            recognition.onend = () => {
+                micBtn.classList.remove('listening');
+                aiInput.placeholder = "Type message...";
+            };
+            
+            recognition.start();
+        } else {
+            showToast("Voice recognition not supported here.");
+        }
     });
 }
+
+// Start app
+fetchOrders();
