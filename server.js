@@ -163,7 +163,10 @@ app.post('/webhook', async (req, res) => {
     res.type('text/xml').send(twiml.toString());
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-    console.log(`Make sure to expose this port via ngrok and configure your webhook to http://YOUR_NGROK_URL/webhook`);
-});
+if (process.env.NODE_ENV !== 'production' || process.env.LOCAL_SERVER === 'true') {
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+        console.log(`Make sure to expose this port via ngrok and configure your webhook to http://YOUR_NGROK_URL/webhook`);
+    });
+}
+module.exports = app;
