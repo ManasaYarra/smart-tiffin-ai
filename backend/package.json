@@ -1,12 +1,11 @@
 {
-  "name": "smart-tiffin-ai",
+  "name": "smart-tiffin-ai-backend",
   "version": "1.0.0",
-  "description": "Smart Tiffin AI - Home Food Business Manager",
-  "main": "backend/server.js",
+  "description": "Smart Tiffin AI - Backend Server",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node backend/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [],
   "author": "",
