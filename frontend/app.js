@@ -156,23 +156,32 @@ function showToast(msg) {
 }
 
 // --- Add Order Logic ---
-addOrderForm.addEventListener('submit', (e) => {
+addOrderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const item = document.getElementById('order-item').value;
     const qty = parseInt(document.getElementById('order-qty').value);
     const price = parseFloat(document.getElementById('order-price').value);
     const time = document.getElementById('order-time').value;
+    const emoji = getEmoji(item);
 
-    const newOrder = {
-        item,
-        qty,
-        price,
-        time,
-        status: "pending",
-        emoji: getEmoji(item)
-    };
+    try {
+        const response = await fetch(`${API_BASE}/api/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item, qty, price, time, emoji })
+        });
 
-    orders.unshift({ id: Date.now(), ...newOrder });
+        if (response.ok) {
+            const newOrder = await response.json();
+            orders.unshift(newOrder);
+        } else {
+            // Fallback: add locally if server unreachable
+            orders.unshift({ id: Date.now(), item, qty, price, time, emoji, status: 'pending' });
+        }
+    } catch (err) {
+        // Offline fallback
+        orders.unshift({ id: Date.now(), item, qty, price, time, emoji, status: 'pending' });
+    }
 
     addOrderForm.reset();
     showToast("Order added successfully!");

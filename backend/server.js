@@ -48,6 +48,15 @@ app.get('/api/orders', (req, res) => {
     res.json(getOrders());
 });
 
+app.post('/api/orders', (req, res) => {
+    const { item, qty, price, time, emoji } = req.body;
+    if (!item || !qty || !price || !time) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const newOrder = addOrder({ item, qty: Number(qty), price: Number(price), time, emoji });
+    res.status(201).json(newOrder);
+});
+
 // ------------------------------
 // OpenAI Helper: Parse Order Text
 // ------------------------------
