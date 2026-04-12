@@ -163,10 +163,14 @@ app.post('/webhook', async (req, res) => {
     res.type('text/xml').send(twiml.toString());
 });
 
-if (process.env.NODE_ENV !== 'production' || process.env.LOCAL_SERVER === 'true') {
-    app.listen(port, () => {
-        console.log(`Server running at http://localhost:${port}`);
-        console.log(`Make sure to expose this port via ngrok and configure your webhook to http://YOUR_NGROK_URL/webhook`);
-    });
-}
-module.exports = app;
+// ------------------------------
+// API: Serve index.html
+// ------------------------------
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Make sure to expose this port via ngrok and configure your webhook to http://YOUR_NGROK_URL/webhook`);
+});
