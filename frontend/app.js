@@ -325,5 +325,24 @@ if (micBtn) {
     });
 }
 
-// Start app
+// --- App Initialization & Splash ---
+window.addEventListener('DOMContentLoaded', () => {
+    // Show splash for 2 seconds, then go to login
+    setTimeout(() => {
+        const splash = document.getElementById('splash-view');
+        if (splash) {
+            splash.style.opacity = '0';
+            splash.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                splash.classList.remove('active');
+                splash.style.display = 'none';
+                switchView('login-view');
+            }, 500);
+        } else {
+            switchView('login-view');
+        }
+    }, 2000);
+});
+
+// Start fetching data in background
 fetchOrders();

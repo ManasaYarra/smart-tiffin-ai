@@ -14,8 +14,17 @@
 <body>
     <div id="app">
         
+        <!-- Splash Screen View -->
+        <main id="splash-view" class="view active animate-fade-in" style="background: linear-gradient(135deg, var(--zomato-red), var(--swiggy-orange)); z-index: 9999; display: flex !important; align-items: center; justify-content: center; position: fixed; inset: 0;">
+            <div style="text-align: center; color: white;">
+                <div style="font-size: 80px; margin-bottom: 1rem;">🍱</div>
+                <h1 style="color: white; font-size: 2.8rem; letter-spacing: -1px;">Smart Tiffin AI</h1>
+                <p style="color: rgba(255,255,255,0.8); font-weight: 500; letter-spacing: 2px; text-transform: uppercase;">Professional Home Chef</p>
+            </div>
+        </main>
+        
         <!-- Login View -->
-        <main id="login-view" class="view active animate-fade-in">
+        <main id="login-view" class="view animate-fade-in">
             <div class="login-container">
                 <div class="logo-section">
                     <div class="logo-wrapper">
@@ -40,6 +49,14 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Enter Kitchen</button>
+                    
+                    <!-- Demo Credentials Helper -->
+                    <div style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px dashed var(--grey-medium);">
+                        <p style="font-size: 0.75rem; font-weight: 700; color: var(--grey-dark); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Demo Access</p>
+                        <p style="font-size: 0.85rem; color: var(--grey-medium);">Email: <span style="color: var(--zomato-red); font-weight: 600;">chef@home.com</span></p>
+                        <p style="font-size: 0.85rem; color: var(--grey-medium);">Key: <span style="color: var(--zomato-red); font-weight: 600;">password123</span></p>
+                    </div>
+
                     <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem;" class="text-muted">
                         Don't have an account? <span style="color: var(--zomato-red); font-weight: 700;">Sign up</span>
                     </p>
