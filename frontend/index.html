@@ -15,11 +15,22 @@
     <div id="app">
         
         <!-- Splash Screen View -->
-        <main id="splash-view" class="view active animate-fade-in" style="background: linear-gradient(135deg, var(--zomato-red), var(--swiggy-orange)); z-index: 9999; display: flex !important; align-items: center; justify-content: center; position: fixed; inset: 0;">
-            <div style="text-align: center; color: white;">
-                <div style="font-size: 80px; margin-bottom: 1rem;">🍱</div>
-                <h1 style="color: white; font-size: 2.8rem; letter-spacing: -1px;">Smart Tiffin AI</h1>
-                <p style="color: rgba(255,255,255,0.8); font-weight: 500; letter-spacing: 2px; text-transform: uppercase;">Professional Home Chef</p>
+        <main id="splash-view" class="view active animate-fade-in" style="z-index: 9999; display: flex !important; align-items: center; justify-content: center; position: fixed; inset: 0;">
+            <!-- Wavy Backgrounds -->
+            <div class="splash-wave"></div>
+            <div class="splash-wave" style="animation-delay: -5s; opacity: 0.3;"></div>
+            
+            <!-- Realistic Food Items -->
+            <div class="floating-food food-1"></div>
+            <div class="floating-food food-2"></div>
+            <div class="floating-food food-3"></div>
+            <div class="floating-food food-4"></div>
+
+            <div class="branding">
+                <h1 style="margin-bottom: 0.5rem;">Smart Tiffin AI</h1>
+                <p>PROFESSIONAL HOME CHEF</p>
+                <!-- Central Logo Icon -->
+                <div style="margin-top: 2rem; color: var(--zomato-red); font-size: 2.5rem;">🍱</div>
             </div>
         </main>
         

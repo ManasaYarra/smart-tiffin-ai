@@ -326,49 +326,22 @@ if (micBtn) {
 }
 
 // --- App Initialization & Splash ---
-function createSplashParticles() {
-    const splash = document.getElementById('splash-view');
-    if (!splash) return;
-
-    const foods = ['🥘', '🥞', '🍝', '🍗', '🍱', '🫓', '🍛'];
-    const animationTypes = ['fall', 'twist'];
-
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'splash-particle';
-        particle.innerText = foods[Math.floor(Math.random() * foods.length)];
-        
-        const left = Math.random() * 100;
-        const duration = 1.5 + Math.random() * 1.5;
-        const delay = Math.random() * 1;
-        const anim = animationTypes[Math.floor(Math.random() * animationTypes.length)];
-
-        particle.style.left = `${left}vw`;
-        particle.style.animation = `${anim} ${duration}s ${delay}s ease-in-out forwards`;
-        
-        splash.appendChild(particle);
-    }
-}
-
 window.addEventListener('DOMContentLoaded', () => {
-    // Start food animation
-    createSplashParticles();
-
-    // Show splash for 2.5 seconds, then go to login
+    // Show splash for 2.8 seconds (extra 0.3s for new assets), then go to login
     setTimeout(() => {
         const splash = document.getElementById('splash-view');
         if (splash) {
             splash.style.opacity = '0';
-            splash.style.transition = 'opacity 0.5s ease';
+            splash.style.transition = 'opacity 0.8s ease-in';
             setTimeout(() => {
                 splash.classList.remove('active');
                 splash.style.display = 'none';
                 switchView('login-view');
-            }, 500);
+            }, 800);
         } else {
             switchView('login-view');
         }
-    }, 2500);
+    }, 2800);
 });
 
 // Start fetching data in background
