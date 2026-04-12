@@ -326,8 +326,35 @@ if (micBtn) {
 }
 
 // --- App Initialization & Splash ---
+function createSplashParticles() {
+    const splash = document.getElementById('splash-view');
+    if (!splash) return;
+
+    const foods = ['🥘', '🥞', '🍝', '🍗', '🍱', '🫓', '🍛'];
+    const animationTypes = ['fall', 'twist'];
+
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'splash-particle';
+        particle.innerText = foods[Math.floor(Math.random() * foods.length)];
+        
+        const left = Math.random() * 100;
+        const duration = 1.5 + Math.random() * 1.5;
+        const delay = Math.random() * 1;
+        const anim = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+
+        particle.style.left = `${left}vw`;
+        particle.style.animation = `${anim} ${duration}s ${delay}s ease-in-out forwards`;
+        
+        splash.appendChild(particle);
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
-    // Show splash for 2 seconds, then go to login
+    // Start food animation
+    createSplashParticles();
+
+    // Show splash for 2.5 seconds, then go to login
     setTimeout(() => {
         const splash = document.getElementById('splash-view');
         if (splash) {
@@ -341,7 +368,7 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             switchView('login-view');
         }
-    }, 2000);
+    }, 2500);
 });
 
 // Start fetching data in background
