@@ -124,8 +124,7 @@ function renderOrders() {
                         <span class="status-badge ${statusClass}">${statusText}</span>
                     </div>
                     <div class="order-meta">
-                        <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
-                        ${order.time}
+                        ⏰ ${order.time}
                     </div>
                 </div>
                 <div class="order-price">₹${order.price.toFixed(2)}</div>
