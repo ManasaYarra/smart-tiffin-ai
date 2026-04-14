@@ -327,7 +327,7 @@ if (micBtn) {
 
 // --- App Initialization & Splash ---
 window.addEventListener('DOMContentLoaded', () => {
-    // Show splash for 2.8 seconds (extra 0.3s for new assets), then go to login
+    // Show splash for 10 seconds, then go to login
     setTimeout(() => {
         const splash = document.getElementById('splash-view');
         if (splash) {
@@ -341,7 +341,7 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             switchView('login-view');
         }
-    }, 2800);
+    }, 10000);
 });
 
 // Start fetching data in background
